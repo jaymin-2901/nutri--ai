@@ -1,20 +1,9 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Key, ExternalLink, Eye, EyeOff, CheckCircle, X } from 'lucide-react'
+import { CheckCircle, X } from 'lucide-react'
 import { useAppStore } from '@/store/useAppStore'
 
 export function ApiKeyModal({ isOpen, onClose }) {
-  const { apiKey, setApiKey } = useAppStore()
-  const [value, setValue] = useState(apiKey)
-  const [show, setShow] = useState(false)
-  const [saved, setSaved] = useState(false)
-
-  const handleSave = () => {
-    setApiKey(value.trim())
-    setSaved(true)
-    setTimeout(() => { setSaved(false); onClose() }, 1200)
-  }
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -31,44 +20,44 @@ export function ApiKeyModal({ isOpen, onClose }) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="relative bg-white rounded-2xl shadow-xl border border-surface-200 w-full max-w-md p-6"
+            className="relative bg-white rounded-2xl shadow-xl border border-surface-200 w-full max-w-md p-6 max-h-[90vh] overflow-auto"
           >
             <button onClick={onClose} className="absolute top-4 right-4 text-surface-400 hover:text-surface-600">
               <X className="w-4 h-4" />
             </button>
 
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center">
-                <Key className="w-5 h-5 text-brand-600" />
+              <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-emerald-600" />
               </div>
               <div>
-                <h2 className="font-display font-bold text-surface-900">Gemini API Key</h2>
-                <p className="text-xs text-surface-400">Required for AI features</p>
+                <h2 className="font-display font-bold text-surface-900">Gemini API Ready</h2>
+                <p className="text-xs text-surface-400">Pre-configured for all users</p>
               </div>
             </div>
 
-<div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-xs">
-                <div className="flex items-center gap-2 mb-1">
+            <div className="space-y-4">
+              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-sm">
+                <div className="flex items-center gap-2 mb-2">
                   <CheckCircle className="w-4 h-4 text-emerald-500" />
-                  <span className="font-semibold text-emerald-700">API Key Pre-configured</span>
+                  <span className="font-semibold text-emerald-700">✅ API Key Active</span>
                 </div>
-                <p className="text-emerald-600">Gemini AI is ready! No key needed.</p>
+                <p className="text-emerald-600">AI analysis works instantly – no setup required!</p>
               </div>
 
-              <div className="p-3 bg-surface-50 rounded-xl text-xs text-surface-500 space-y-1">
-                <p className="font-medium text-surface-600">How to get a free key:</p>
-                <p>1. Visit <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-brand-600 underline">Google AI Studio</a></p>
-                <p>2. Sign in with Google → Create API Key</p>
-                <p>3. Copy and paste it above</p>
-                <p className="text-surface-400 mt-2">🔒 Key is stored locally in your browser only</p>
+              <div className="text-xs text-surface-500 space-y-2 p-3 bg-surface-50 rounded-xl">
+                <p className="font-medium text-surface-600 mb-1">Key Management:</p>
+                <ul className="space-y-1 text-[11px]">
+                  <li>• DevTools → Application → Local Storage → nutrisense-storage → Edit 'apiKey'</li>
+                  <li>• Or clear site data to reset</li>
+                </ul>
               </div>
 
               <button
-                onClick={handleSave}
-                disabled={!value.trim()}
-                className="btn-primary w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed"
+                onClick={onClose}
+                className="btn-primary w-full"
               >
-                {saved ? <><CheckCircle className="w-4 h-4" /> Saved!</> : 'Save API Key'}
+                Got it!
               </button>
             </div>
           </motion.div>

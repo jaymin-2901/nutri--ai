@@ -220,17 +220,7 @@ export function MealAnalyzer({ onOpenApiKey }) {
           )}
         </button>
 
-        {/* No API key warning */}
-        {!apiKey && (
-          <button
-            onClick={onOpenApiKey}
-            className="flex items-center gap-2 text-xs text-amber-600 bg-amber-50 border border-amber-200 px-3 py-2 rounded-lg w-full hover:bg-amber-100 transition-colors"
-          >
-            <Key className="w-3.5 h-3.5" />
-            Set your Gemini API key to enable AI analysis
-          </button>
-        )}
-      </motion.div>
+</motion.div>
 
       {/* Loading skeleton */}
       {loading && (

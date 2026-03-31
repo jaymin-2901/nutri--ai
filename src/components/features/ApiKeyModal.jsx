@@ -47,25 +47,12 @@ export function ApiKeyModal({ isOpen, onClose }) {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-surface-600 mb-1.5">Your API Key</label>
-                <div className="relative">
-                  <input
-                    type={show ? 'text' : 'password'}
-                    value={value}
-                    onChange={e => setValue(e.target.value)}
-                    placeholder="AIza..."
-                    className="input-field pr-10"
-                    onKeyDown={e => e.key === 'Enter' && handleSave()}
-                  />
-                  <button
-                    onClick={() => setShow(!show)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600"
-                  >
-                    {show ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
+<div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-xs">
+                <div className="flex items-center gap-2 mb-1">
+                  <CheckCircle className="w-4 h-4 text-emerald-500" />
+                  <span className="font-semibold text-emerald-700">API Key Pre-configured</span>
                 </div>
+                <p className="text-emerald-600">Gemini AI is ready! No key needed.</p>
               </div>
 
               <div className="p-3 bg-surface-50 rounded-xl text-xs text-surface-500 space-y-1">

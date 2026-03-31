@@ -18,7 +18,7 @@ export const useAppStore = create(
   persist(
     (set, get) => ({
       // API Key
-      apiKey: '',
+apiKey: 'AIzaSyAvKwbf9SvXwk9G2GLmy2BUCHklfBHchec',
       setApiKey: (key) => set({ apiKey: key }),
 
       // Profile

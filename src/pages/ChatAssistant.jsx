@@ -55,7 +55,7 @@ function ChatBubble({ msg }) {
 }
 
 export function ChatAssistant({ onOpenApiKey }) {
-  const { chatMessages, addChatMessage, clearChat, profile, apiKey } = useAppStore()
+  const { chatMessages, addChatMessage, clearChat, profile, apiKey, aiProvider } = useAppStore()
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const bottomRef = useRef()
@@ -76,7 +76,7 @@ export function ChatAssistant({ onOpenApiKey }) {
 
     try {
       const allMsgs = [...chatMessages, { role: 'user', content: msg }]
-      const reply = await chatWithNutritionAI(allMsgs, profile, apiKey)
+      const reply = await chatWithNutritionAI(allMsgs, profile, apiKey, aiProvider)
       addChatMessage({ role: 'assistant', content: reply })
     } catch (err) {
       addChatMessage({
@@ -124,7 +124,7 @@ export function ChatAssistant({ onOpenApiKey }) {
             <p className="text-sm text-surface-400 mb-5">
               {profile.name
                 ? `Hi ${profile.name}! I'm personalized to your ${profile.goal} weight goal.`
-                : 'Get personalized nutrition advice powered by Gemini AI.'}
+                : `Get personalized nutrition advice powered by ${aiProvider === 'groq' ? 'Groq AI' : 'Gemini AI'}.`}
             </p>
             <div className="space-y-2 text-left max-w-xs mx-auto">
               {STARTER_PROMPTS.map(p => (

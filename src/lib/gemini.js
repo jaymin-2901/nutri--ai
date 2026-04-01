@@ -1,5 +1,9 @@
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const GROQ_TEXT_MODEL = 'llama-3.3-70b-versatile';
+const GROQ_VISION_MODEL = 'llama-3.2-11b-vision-preview';
+
 async function callGemini(parts, apiKey, { responseMimeType } = {}) {
   const generationConfig = {
     temperature: 0.4,
@@ -27,7 +31,37 @@ async function callGemini(parts, apiKey, { responseMimeType } = {}) {
   return text
 }
 
-export async function analyzeMealText(mealText, profile, apiKey) {
+async function callGroq(messages, apiKey, { jsonMode = false, useVision = false } = {}) {
+  const model = useVision ? GROQ_VISION_MODEL : GROQ_TEXT_MODEL
+  const body = {
+    model,
+    messages,
+    temperature: 0.4,
+    max_tokens: 1024,
+  }
+  if (jsonMode) body.response_format = { type: 'json_object' }
+
+  const response = await fetch(GROQ_API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify(body),
+  })
+
+  if (!response.ok) {
+    const err = await response.json()
+    throw new Error(err?.error?.message || `API error ${response.status}`)
+  }
+
+  const data = await response.json()
+  const text = data?.choices?.[0]?.message?.content
+  if (!text) throw new Error('Empty response from Groq')
+  return text
+}
+
+export async function analyzeMealText(mealText, profile, apiKey, provider = 'gemini') {
   const prompt = `You are a clinical nutritionist AI. Analyze this meal and return ONLY valid JSON.
 
 Meal: "${mealText}"
@@ -52,11 +86,20 @@ Return ONLY this JSON (no markdown, no explanation):
   "mealType": "Breakfast" | "Lunch" | "Dinner" | "Snack"
 }`
 
+  if (provider === 'groq') {
+    const text = await callGroq(
+      [{ role: 'user', content: prompt }],
+      apiKey,
+      { jsonMode: true }
+    )
+    return parseJSON(text)
+  }
+
   const text = await callGemini([{ text: prompt }], apiKey, { responseMimeType: 'application/json' })
   return parseJSON(text)
 }
 
-export async function analyzeMealImage(base64Image, mimeType, profile, apiKey) {
+export async function analyzeMealImage(base64Image, mimeType, profile, apiKey, provider = 'gemini') {
   const prompt = `You are a clinical nutritionist AI. Analyze the food in this image and return ONLY valid JSON.
 
 User Profile: Age ${profile.age}, Weight ${profile.weight}kg, Height ${profile.height}cm, Goal: ${profile.goal} weight, Diet: ${profile.dietType}
@@ -80,6 +123,21 @@ Return ONLY this JSON (no markdown, no explanation):
   "mealType": "Breakfast" | "Lunch" | "Dinner" | "Snack"
 }`
 
+  if (provider === 'groq') {
+    const text = await callGroq(
+      [{
+        role: 'user',
+        content: [
+          { type: 'text', text: prompt },
+          { type: 'image_url', image_url: { url: `data:${mimeType};base64,${base64Image}` } },
+        ],
+      }],
+      apiKey,
+      { useVision: true, jsonMode: true }
+    )
+    return parseJSON(text)
+  }
+
   const text = await callGemini([
     { text: prompt },
     { inlineData: { mimeType, data: base64Image } },
@@ -87,11 +145,19 @@ Return ONLY this JSON (no markdown, no explanation):
   return parseJSON(text)
 }
 
-export async function chatWithNutritionAI(messages, profile, apiKey) {
+export async function chatWithNutritionAI(messages, profile, apiKey, provider = 'gemini') {
   const systemContext = `You are NutriSense, a smart, concise nutrition assistant. 
 User: ${profile.name || 'User'}, Age ${profile.age}, Goal: ${profile.goal} weight, Diet: ${profile.dietType}.
 Target: ${profile.targetCalories} kcal/day, ${profile.proteinNeeds}g protein/day.
 Give short, practical, personalized advice. Max 3 sentences. Use bullet points for lists.`
+
+  if (provider === 'groq') {
+    const groqMessages = [
+      { role: 'system', content: systemContext },
+      ...messages.slice(-6).map(m => ({ role: m.role, content: m.content })),
+    ]
+    return callGroq(groqMessages, apiKey)
+  }
 
   const conversationHistory = messages.slice(-6).map(m =>
     `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`

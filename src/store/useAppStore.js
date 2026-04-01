@@ -17,9 +17,11 @@ const computeProfileStats = (profile) => {
 export const useAppStore = create(
   persist(
     (set, get) => ({
-      // API Key
-apiKey: 'AIzaSyAvKwbf9SvXwk9G2GLmy2BUCHklfBHchec',
+      // API Key & Provider
+      apiKey: '',
       setApiKey: (key) => set({ apiKey: key }),
+      aiProvider: 'gemini',
+      setAiProvider: (provider) => set({ aiProvider: provider }),
 
       // Profile
       profile: {
@@ -124,6 +126,7 @@ apiKey: 'AIzaSyAvKwbf9SvXwk9G2GLmy2BUCHklfBHchec',
       name: 'nutrisense-storage',
       partialize: (state) => ({
         apiKey: state.apiKey,
+        aiProvider: state.aiProvider,
         profile: state.profile,
         profileComplete: state.profileComplete,
         meals: state.meals.slice(0, 50), // keep last 50 meals

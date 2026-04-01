@@ -12,7 +12,7 @@ import { getMealTypeByTime } from '@/lib/utils'
 const MEAL_TYPES = ['Breakfast', 'Brunch', 'Lunch', 'Snack', 'Dinner']
 
 export function MealAnalyzer({ onOpenApiKey }) {
-  const { profile, apiKey, addMeal } = useAppStore()
+  const { profile, apiKey, aiProvider, addMeal } = useAppStore()
   const [mode, setMode] = useState('text') // 'text' | 'image'
   const [text, setText] = useState('')
   const [imageFile, setImageFile] = useState(null)
@@ -51,7 +51,7 @@ export function MealAnalyzer({ onOpenApiKey }) {
     try {
       let data
       if (mode === 'text') {
-        data = await analyzeMealText(text.trim(), profile, apiKey)
+        data = await analyzeMealText(text.trim(), profile, apiKey, aiProvider)
       } else {
         const reader = new FileReader()
         const base64 = await new Promise((res, rej) => {
@@ -59,7 +59,7 @@ export function MealAnalyzer({ onOpenApiKey }) {
           reader.onerror = rej
           reader.readAsDataURL(imageFile)
         })
-        data = await analyzeMealImage(base64, imageFile.type, profile, apiKey)
+        data = await analyzeMealImage(base64, imageFile.type, profile, apiKey, aiProvider)
       }
 
       // Normalize fields
@@ -234,7 +234,7 @@ export function MealAnalyzer({ onOpenApiKey }) {
               <Sparkles className="w-5 h-5 text-brand-500 animate-pulse" />
             </div>
             <div>
-              <div className="text-sm font-semibold text-surface-700">Gemini AI is analyzing...</div>
+              <div className="text-sm font-semibold text-surface-700">{aiProvider === 'groq' ? 'Groq AI' : 'Gemini AI'} is analyzing...</div>
               <div className="text-xs text-surface-400">Calculating macros & goal alignment</div>
             </div>
           </div>

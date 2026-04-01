@@ -7,18 +7,40 @@ async function callGemini(parts, apiKey, { responseMimeType } = {}) {
   }
   if (responseMimeType) generationConfig.responseMimeType = responseMimeType
 
-  const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
+  const body = {
+    contents: [{ parts }],
+    generationConfig,
+  }
+
+  const parseErrorJson = async (res) => {
+    try { return await res.json() } catch { return {} }
+  }
+
+  let response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts }],
-      generationConfig,
-    }),
+    body: JSON.stringify(body),
   })
 
+  // If JSON mode is unsupported, retry without it
+  if (!response.ok && responseMimeType) {
+    const errData = await parseErrorJson(response)
+    const msg = errData?.error?.message || ''
+    if (response.status === 400 && msg.toLowerCase().includes('responsemimetype')) {
+      const fallbackConfig = { temperature: 0.4, maxOutputTokens: 1024 }
+      response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts }], generationConfig: fallbackConfig }),
+      })
+    } else {
+      throw new Error(msg || `API error ${response.status}`)
+    }
+  }
+
   if (!response.ok) {
-    const err = await response.json()
-    throw new Error(err?.error?.message || `API error ${response.status}`) 
+    const err = await parseErrorJson(response)
+    throw new Error(err?.error?.message || `API error ${response.status}`)
   }
 
   const data = await response.json()

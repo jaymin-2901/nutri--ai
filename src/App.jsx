@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { BottomNav } from '@/components/layout/BottomNav'
@@ -22,8 +22,16 @@ const PAGE_COMPONENTS = {
 }
 
 export default function App() {
-  const { activeTab, loadDemo } = useAppStore()
+  const { activeTab, loadDemo, apiKey } = useAppStore()
   const [apiKeyOpen, setApiKeyOpen] = useState(false)
+
+  // Auto-open API key modal if no key is configured
+  useEffect(() => {
+    if (!apiKey) {
+      const timer = setTimeout(() => setApiKeyOpen(true), 800)
+      return () => clearTimeout(timer)
+    }
+  }, [apiKey])
 
   const PageComponent = PAGE_COMPONENTS[activeTab] || Dashboard
 
@@ -33,7 +41,7 @@ export default function App() {
 
       {/* Main content area */}
       <div className="lg:ml-64 min-h-screen flex flex-col">
-        <Header onDemo={loadDemo} />
+        <Header onDemo={loadDemo} onOpenApiKey={() => setApiKeyOpen(true)} />
 
         <main className="flex-1 px-4 lg:px-8 py-5 pb-24 lg:pb-8 overflow-x-hidden">
           <AnimatePresence mode="wait">

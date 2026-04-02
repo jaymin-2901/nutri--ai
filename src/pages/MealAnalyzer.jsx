@@ -113,23 +113,24 @@ export function MealAnalyzer({ onOpenApiKey }) {
   return (
     <div className="max-w-2xl mx-auto space-y-5">
       {/* Mode toggle */}
-      <div className="flex gap-2 p-1 bg-surface-100 rounded-xl">
+      <div className="flex gap-1.5 p-1.5 bg-white rounded-xl border border-surface-100 shadow-sm">
         {[
           { id: 'text', icon: Type, label: 'Describe Meal' },
           { id: 'image', icon: ImageIcon, label: 'Upload Photo' },
         ].map(m => (
-          <button
+          <motion.button
             key={m.id}
+            whileTap={{ scale: 0.97 }}
             onClick={() => { setMode(m.id); setResult(null); setError(null) }}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
               mode === m.id
-                ? 'bg-white text-surface-800 shadow-sm'
-                : 'text-surface-500 hover:text-surface-700'
+                ? 'bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-sm'
+                : 'text-surface-500 hover:text-surface-700 hover:bg-surface-50'
             }`}
           >
             <m.icon className="w-4 h-4" />
             {m.label}
-          </button>
+          </motion.button>
         ))}
       </div>
 
@@ -208,17 +209,19 @@ export function MealAnalyzer({ onOpenApiKey }) {
         )}
 
         {/* Analyze button */}
-        <button
+        <motion.button
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.98 }}
           onClick={analyze}
           disabled={loading || (mode === 'text' ? !text.trim() : !imageFile)}
-          className="btn-primary w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed text-base py-3"
+          className="btn-primary w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed text-base py-3.5 font-semibold"
         >
           {loading ? (
             <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing with AI...</>
           ) : (
             <><Sparkles className="w-4 h-4" /> Analyze & Get Decision</>
           )}
-        </button>
+        </motion.button>
 
 </motion.div>
 
@@ -281,11 +284,16 @@ export function MealAnalyzer({ onOpenApiKey }) {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            className="flex flex-col items-center justify-center p-8 bg-brand-50 border border-brand-200 rounded-2xl text-center"
+            className="flex flex-col items-center justify-center p-10 bg-gradient-to-br from-brand-50 to-emerald-50 border border-brand-200 rounded-2xl text-center shadow-sm"
           >
-            <div className="text-4xl mb-2">✅</div>
-            <h3 className="font-display font-bold text-brand-800">Meal Logged!</h3>
-            <p className="text-sm text-brand-600">Check your dashboard for today's overview.</p>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              className="text-5xl mb-3"
+            >✅</motion.div>
+            <h3 className="font-display font-bold text-brand-800 text-lg">Meal Logged!</h3>
+            <p className="text-sm text-brand-600 mt-1">Check your dashboard for today's overview.</p>
           </motion.div>
         )}
       </AnimatePresence>

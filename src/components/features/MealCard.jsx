@@ -24,16 +24,17 @@ export function MealCard({ meal, onRemove, index = 0 }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -20 }}
       transition={{ delay: index * 0.05 }}
-      className="glass-card rounded-2xl p-4 hover:shadow-card-hover transition-all duration-300"
+      whileHover={{ y: -2, scale: 1.005 }}
+      className="glass-card rounded-2xl p-4 transition-shadow duration-300 hover:shadow-card-hover cursor-default"
     >
       <div className="flex items-start gap-3">
-        {/* Emoji + score */}
+        {/* Emoji + score badge */}
         <div className="relative flex-shrink-0">
-          <div className="w-12 h-12 rounded-xl bg-surface-50 flex items-center justify-center text-2xl border border-surface-100">
+          <div className="w-12 h-12 rounded-xl bg-surface-50 flex items-center justify-center text-2xl border border-surface-100 shadow-sm">
             {emoji}
           </div>
           <div className={cn(
-            'absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white text-xs flex items-center justify-center font-bold',
+            'absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white text-xs flex items-center justify-center font-bold shadow-sm',
             meal.score >= 70 ? 'bg-emerald-500 text-white' :
             meal.score >= 40 ? 'bg-amber-400 text-white' : 'bg-red-400 text-white'
           )}>
@@ -47,7 +48,7 @@ export function MealCard({ meal, onRemove, index = 0 }) {
             <div>
               <h4 className="text-sm font-semibold text-surface-800 truncate">{meal.name}</h4>
               <div className="flex items-center gap-2 mt-0.5">
-                <span className="text-xs text-surface-400">{meal.mealType}</span>
+                <span className="text-xs text-surface-400 capitalize">{meal.mealType}</span>
                 {time && (
                   <>
                     <span className="text-surface-200">•</span>
@@ -59,27 +60,32 @@ export function MealCard({ meal, onRemove, index = 0 }) {
               </div>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
-              <span className={cn('text-xs font-bold px-2 py-0.5 rounded-full border', dc.bg, dc.text, dc.border)}>
+              <span className={cn(
+                'text-xs font-bold px-2 py-0.5 rounded-full border shadow-sm',
+                dc.bg, dc.text, dc.border
+              )}>
                 {meal.score}
               </span>
               {onRemove && (
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.15 }}
+                  whileTap={{ scale: 0.9 }}
                   onClick={() => onRemove(meal.id)}
                   className="w-6 h-6 rounded-lg hover:bg-red-50 hover:text-red-500 text-surface-300 flex items-center justify-center transition-colors"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
-                </button>
+                </motion.button>
               )}
             </div>
           </div>
 
           {/* Macros */}
           <div className="flex items-center gap-3 mt-2">
-            <span className="text-xs font-semibold text-surface-700">{meal.calories} kcal</span>
-            <div className="flex items-center gap-2 text-xs text-surface-400">
-              <span className="text-blue-600 font-medium">P {meal.protein}g</span>
-              <span className="text-amber-600 font-medium">C {meal.carbs}g</span>
-              <span className="text-rose-500 font-medium">F {meal.fat}g</span>
+            <span className="text-xs font-bold text-surface-700">{meal.calories} kcal</span>
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-blue-600 font-semibold">P {meal.protein}g</span>
+              <span className="text-amber-600 font-semibold">C {meal.carbs}g</span>
+              <span className="text-rose-500 font-semibold">F {meal.fat}g</span>
             </div>
           </div>
 

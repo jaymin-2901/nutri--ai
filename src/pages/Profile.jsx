@@ -149,20 +149,22 @@ export function Profile() {
         <h3 className="font-display font-semibold text-surface-800 text-sm">Your Goal</h3>
         <div className="grid grid-cols-3 gap-2">
           {GOALS.map(g => (
-            <button
+            <motion.button
               key={g.value}
+              whileHover={{ y: -1 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => update('goal', g.value)}
               className={cn(
                 'flex flex-col items-center gap-1 p-3 rounded-xl border-2 text-center transition-all duration-200',
                 form.goal === g.value
-                  ? 'border-brand-400 bg-brand-50'
-                  : 'border-surface-200 hover:border-surface-300 bg-white'
+                  ? 'border-brand-400 bg-gradient-to-br from-brand-50 to-emerald-50 shadow-sm'
+                  : 'border-surface-200 hover:border-surface-300 bg-white hover:shadow-sm'
               )}
             >
               <span className="text-2xl">{g.icon}</span>
               <span className="text-xs font-semibold text-surface-700">{g.label}</span>
               <span className="text-[10px] text-surface-400 leading-tight">{g.desc}</span>
-            </button>
+            </motion.button>
           ))}
         </div>
       </motion.div>
@@ -177,19 +179,21 @@ export function Profile() {
         <h3 className="font-display font-semibold text-surface-800 text-sm">Activity Level</h3>
         <div className="grid grid-cols-2 gap-2">
           {ACTIVITY_LEVELS.map(a => (
-            <button
+            <motion.button
               key={a.value}
+              whileHover={{ y: -1 }}
+              whileTap={{ scale: 0.97 }}
               onClick={() => update('activityLevel', a.value)}
               className={cn(
                 'flex flex-col p-3 rounded-xl border-2 text-left transition-all duration-200',
                 form.activityLevel === a.value
-                  ? 'border-brand-400 bg-brand-50'
-                  : 'border-surface-200 hover:border-surface-300 bg-white'
+                  ? 'border-brand-400 bg-gradient-to-br from-brand-50 to-emerald-50 shadow-sm'
+                  : 'border-surface-200 hover:border-surface-300 bg-white hover:shadow-sm'
               )}
             >
               <span className="text-xs font-semibold text-surface-700">{a.label}</span>
               <span className="text-[10px] text-surface-400 mt-0.5">{a.desc}</span>
-            </button>
+            </motion.button>
           ))}
         </div>
       </motion.div>

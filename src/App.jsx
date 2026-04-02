@@ -28,7 +28,7 @@ export default function App() {
   const PageComponent = PAGE_COMPONENTS[activeTab] || Dashboard
 
   return (
-    <div className="min-h-screen bg-surface-50">
+    <div className="min-h-screen" style={{ backgroundColor: 'rgb(241, 251, 253)' }}>
       <Sidebar />
 
       {/* Main content area */}
